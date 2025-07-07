@@ -2,7 +2,7 @@ const baseUrl = "https://readnovelfull.com";
 const proxy = "https://api.allorigins.win/raw?url=";
 
 async function fetchHTML(url) {
-  const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+  const res = await fetch(proxy + url);
   const html = await res.text();
   const parser = new DOMParser();
   return parser.parseFromString(html, "text/html");
@@ -37,9 +37,7 @@ async function loadPopularNovels() {
 }
 
 async function loadChapters(novelUrl, novelName) {
-  const ajaxUrl = novelUrl.replace(/\/$/, "") + "/ajax/chapters/";
-  const doc = await fetchHTML(ajaxUrl);
-
+  const doc = await fetchHTML(novelUrl);
   const chapterList = document.getElementById("chapter-list");
   const novelList = document.getElementById("novel-list");
   const chapterContent = document.getElementById("chapter-content");
@@ -63,10 +61,10 @@ async function loadChapters(novelUrl, novelName) {
   chapterList.appendChild(backBtn);
   chapterList.appendChild(document.createElement("hr"));
 
-  const items = doc.querySelectorAll("li > a[href*='/chapter-']");
+  const items = doc.querySelectorAll("ul.list-chapter li a");
   if (!items.length) {
     const msg = document.createElement("p");
-    msg.textContent = "⚠️ No chapters found.";
+    msg.textContent = "⚠️ No chapters found (fallback).";
     chapterList.appendChild(msg);
     return;
   }
