@@ -63,9 +63,11 @@ async function loadChapters(novelUrl, novelName) {
   chapterList.appendChild(backBtn);
   chapterList.appendChild(document.createElement("hr"));
 
-  const items = doc.querySelectorAll("ul.list-chapter li a");
+  const items = doc.querySelectorAll("li.chapter-item a");
   if (!items.length) {
-    chapterList.innerHTML += "<p>⚠️ No chapters found.</p>";
+    const msg = document.createElement("p");
+    msg.textContent = "⚠️ No chapters found.";
+    chapterList.appendChild(msg);
     return;
   }
 
@@ -91,21 +93,29 @@ async function loadChapterContent(chapterUrl, chapterName, novelName) {
   const chapterList = document.getElementById("chapter-list");
   const chapterContent = document.getElementById("chapter-content");
 
-  chapterContent.innerHTML = `
-    <h2>${novelName} — ${chapterName}</h2>
-    <hr>
-    ${content ? content.innerHTML : "<p>⚠️ Chapter content not found.</p>"}
-    <br><button onclick="goBackToChapters()">⬅️ Back to Chapters</button>
-  `;
+  chapterContent.innerHTML = "";
+
+  const header = document.createElement("h2");
+  header.textContent = `${novelName} — ${chapterName}`;
+
+  const backBtn = document.createElement("button");
+  backBtn.textContent = "⬅️ Back to Chapters";
+  backBtn.onclick = () => {
+    chapterContent.style.display = "none";
+    chapterList.style.display = "block";
+  };
+
+  chapterContent.appendChild(header);
+  chapterContent.appendChild(backBtn);
+  chapterContent.appendChild(document.createElement("hr"));
+
+  chapterContent.innerHTML += content
+    ? content.innerHTML
+    : "<p>⚠️ Chapter content not found.</p>";
 
   novelList.style.display = "none";
   chapterList.style.display = "none";
   chapterContent.style.display = "block";
-}
-
-function goBackToChapters() {
-  document.getElementById("chapter-content").style.display = "none";
-  document.getElementById("chapter-list").style.display = "block";
 }
 
 window.onload = () => {
