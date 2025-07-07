@@ -1,0 +1,21 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f8f8f8;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.novel-item, .chapter-item {
+  padding: 10px;
+  margin: 5px 0;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.novel-item:hover, .chapter-item:hover {
+  background: #e0e0e0;
+}
