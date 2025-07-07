@@ -47,10 +47,11 @@ async function loadChapters(novelUrl, novelName) {
   chapterContent.style.display = "none";
   chapterList.style.display = "block";
 
-  // Reset & tambah butang "Back"
   chapterList.innerHTML = "";
+
   const header = document.createElement("h2");
   header.textContent = `📖 ${novelName}`;
+
   const backBtn = document.createElement("button");
   backBtn.textContent = "⬅️ Back to Novels";
   backBtn.onclick = () => {
@@ -94,7 +95,7 @@ async function loadChapterContent(chapterUrl, chapterName, novelName) {
     <h2>${novelName} — ${chapterName}</h2>
     <hr>
     ${content ? content.innerHTML : "<p>⚠️ Chapter content not found.</p>"}
-    <br><button onclick="goBack()">⬅️ Back</button>
+    <br><button onclick="goBackToChapters()">⬅️ Back to Chapters</button>
   `;
 
   novelList.style.display = "none";
@@ -102,16 +103,11 @@ async function loadChapterContent(chapterUrl, chapterName, novelName) {
   chapterContent.style.display = "block";
 }
 
-function goBack() {
+function goBackToChapters() {
   document.getElementById("chapter-content").style.display = "none";
   document.getElementById("chapter-list").style.display = "block";
 }
-function goBackToNovels() {
-  document.getElementById("chapter-list").style.display = "none";
-  document.getElementById("novel-list").style.display = "block";
-}
 
-// Load popular novels on page load
 window.onload = () => {
   loadPopularNovels();
 };
