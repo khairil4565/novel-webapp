@@ -39,6 +39,7 @@ async function loadPopularNovels() {
 async function loadChapters(novelUrl, novelName) {
   const ajaxUrl = novelUrl.replace(/\/$/, "") + "/ajax/chapters/";
   const doc = await fetchHTML(ajaxUrl);
+
   const chapterList = document.getElementById("chapter-list");
   const novelList = document.getElementById("novel-list");
   const chapterContent = document.getElementById("chapter-content");
@@ -46,7 +47,6 @@ async function loadChapters(novelUrl, novelName) {
   novelList.style.display = "none";
   chapterContent.style.display = "none";
   chapterList.style.display = "block";
-
   chapterList.innerHTML = "";
 
   const header = document.createElement("h2");
@@ -63,7 +63,7 @@ async function loadChapters(novelUrl, novelName) {
   chapterList.appendChild(backBtn);
   chapterList.appendChild(document.createElement("hr"));
 
-  const items = doc.querySelectorAll("li.chapter-item a");
+  const items = doc.querySelectorAll("li a[href*='/chapter-']");
   if (!items.length) {
     const msg = document.createElement("p");
     msg.textContent = "⚠️ No chapters found.";
@@ -109,9 +109,13 @@ async function loadChapterContent(chapterUrl, chapterName, novelName) {
   chapterContent.appendChild(backBtn);
   chapterContent.appendChild(document.createElement("hr"));
 
-  chapterContent.innerHTML += content
-    ? content.innerHTML
-    : "<p>⚠️ Chapter content not found.</p>";
+  if (content) {
+    const contentDiv = document.createElement("div");
+    contentDiv.innerHTML = content.innerHTML;
+    chapterContent.appendChild(contentDiv);
+  } else {
+    chapterContent.innerHTML += "<p>⚠️ Chapter content not found.</p>";
+  }
 
   novelList.style.display = "none";
   chapterList.style.display = "none";
