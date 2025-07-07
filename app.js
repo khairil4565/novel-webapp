@@ -46,11 +46,20 @@ async function loadChapters(novelUrl, novelName) {
   chapterContent.style.display = "none";
   chapterList.style.display = "block";
 
-  chapterList.innerHTML = `
-    <h2>📖 ${novelName}</h2>
-    <button onclick="goBackToNovels()">⬅️ Back to Novels</button>
-    <hr />
-  `;
+  // Reset & tambah butang "Back"
+  chapterList.innerHTML = "";
+  const header = document.createElement("h2");
+  header.textContent = `📖 ${novelName}`;
+  const backBtn = document.createElement("button");
+  backBtn.textContent = "⬅️ Back to Novels";
+  backBtn.onclick = () => {
+    chapterList.style.display = "none";
+    novelList.style.display = "block";
+  };
+
+  chapterList.appendChild(header);
+  chapterList.appendChild(backBtn);
+  chapterList.appendChild(document.createElement("hr"));
 
   const items = doc.querySelectorAll("ul.list-chapter li a");
   if (!items.length) {
