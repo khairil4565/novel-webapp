@@ -2,7 +2,7 @@ const baseUrl = "https://readnovelfull.com";
 const proxy = "https://api.allorigins.win/raw?url=";
 
 async function fetchHTML(url) {
-  const res = await fetch(proxy + url);
+  const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
   const html = await res.text();
   const parser = new DOMParser();
   return parser.parseFromString(html, "text/html");
