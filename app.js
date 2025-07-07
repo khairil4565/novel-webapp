@@ -1,66 +1,98 @@
-const proxy = "https://corsproxy.io/?";
 const baseUrl = "https://readnovelfull.com";
+const proxy = "https://corsproxy.io/?";
 
 async function fetchHTML(url) {
   const res = await fetch(proxy + url);
-  const text = await res.text();
+  const html = await res.text();
   const parser = new DOMParser();
-  return parser.parseFromString(text, "text/html");
+  return parser.parseFromString(html, "text/html");
 }
 
 async function loadPopularNovels() {
   const doc = await fetchHTML(baseUrl + "/novel-list/most-popular-novel");
-
   const rows = doc.querySelectorAll(".list-novel .row");
   const container = document.getElementById("novel-list");
+  container.innerHTML = "<h2>Popular Novels</h2>";
+
+  if (!rows.length) {
+    container.innerHTML += "<p>⚠️ No popular novels found.</p>";
+    return;
+  }
 
   rows.forEach((row, i) => {
-    if (i >= 10) return; // ambil 10 teratas
-
     const a = row.querySelector("h3.novel-title > a");
-    const name = a.innerText;
+    if (!a) return;
+
+    const name = a.textContent.trim();
     const link = baseUrl + a.getAttribute("href");
 
     const div = document.createElement("div");
-    div.textContent = name;
+    div.textContent = `${i + 1}. ${name}`;
     div.className = "novel-item";
+    div.style.cursor = "pointer";
     div.onclick = () => loadChapters(link, name);
 
     container.appendChild(div);
   });
 }
 
-async function loadChapters(novelUrl, title) {
-  const doc = await fetchHTML(novelUrl);
+async function loadChapters(novelUrl, novelName) {
+  const doc = await fetchHTML(novelUrl + "#tab-chapters-title");
   const chapterList = document.getElementById("chapter-list");
-  chapterList.innerHTML = `<h2>📖 Chapters: ${title}</h2>`;
+  const novelList = document.getElementById("novel-list");
+  const chapterContent = document.getElementById("chapter-content");
 
-  const links = [...doc.querySelectorAll("#tab-chapters .list-chapter li a")];
-  links.reverse().forEach((a) => {
-    const name = a.innerText.trim();
+  chapterList.innerHTML = `<h2>Chapters of ${novelName}</h2>`;
+  novelList.style.display = "none";
+  chapterContent.style.display = "none";
+  chapterList.style.display = "block";
+
+  const items = doc.querySelectorAll("ul.list-chapter li a");
+  if (!items.length) {
+    chapterList.innerHTML += "<p>⚠️ No chapters found.</p>";
+    return;
+  }
+
+  items.forEach((a, i) => {
+    const name = a.textContent.trim();
     const link = baseUrl + a.getAttribute("href");
 
     const div = document.createElement("div");
-    div.textContent = name;
+    div.textContent = `${name}`;
     div.className = "chapter-item";
-    div.onclick = () => loadChapterContent(link, name);
+    div.style.cursor = "pointer";
+    div.onclick = () => loadChapterContent(link, name, novelName);
 
     chapterList.appendChild(div);
   });
-
-  document.getElementById("novel-list").style.display = "none";
-  chapterList.style.display = "block";
-  document.getElementById("chapter-content").style.display = "none";
 }
 
-async function loadChapterContent(chapUrl, title) {
-  const doc = await fetchHTML(chapUrl);
-  const content = doc.querySelector(".chapter-c")?.innerHTML;
+async function loadChapterContent(chapterUrl, chapterName, novelName) {
+  const doc = await fetchHTML(chapterUrl);
+  const content = doc.querySelector(".chapter-c");
 
+  const novelList = document.getElementById("novel-list");
+  const chapterList = document.getElementById("chapter-list");
   const chapterContent = document.getElementById("chapter-content");
-  chapterContent.innerHTML = `<h2>${title}</h2><hr><div>${content}</div>`;
 
-  document.getElementById("chapter-list").style.display = "none";
+  chapterContent.innerHTML = `
+    <h2>${novelName} — ${chapterName}</h2>
+    <hr>
+    ${content ? content.innerHTML : "<p>⚠️ Chapter content not found.</p>"}
+    <br><button onclick="goBack()">⬅️ Back</button>
+  `;
+
+  novelList.style.display = "none";
+  chapterList.style.display = "none";
   chapterContent.style.display = "block";
 }
-loadPopularNovels();
+
+function goBack() {
+  document.getElementById("chapter-content").style.display = "none";
+  document.getElementById("chapter-list").style.display = "block";
+}
+
+// Load popular novels on page load
+window.onload = () => {
+  loadPopularNovels();
+};
