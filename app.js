@@ -37,7 +37,8 @@ async function loadPopularNovels() {
 }
 
 async function loadChapters(novelUrl, novelName) {
-  const doc = await fetchHTML(novelUrl + "ajax/chapters/");
+  const ajaxUrl = novelUrl.replace(/\/$/, "") + "/ajax/chapters/";
+  const doc = await fetchHTML(ajaxUrl);
   const chapterList = document.getElementById("chapter-list");
   const novelList = document.getElementById("novel-list");
   const chapterContent = document.getElementById("chapter-content");
