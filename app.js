@@ -42,10 +42,15 @@ async function loadChapters(novelUrl, novelName) {
   const novelList = document.getElementById("novel-list");
   const chapterContent = document.getElementById("chapter-content");
 
-  chapterList.innerHTML = `<h2>Chapters of ${novelName}</h2>`;
   novelList.style.display = "none";
   chapterContent.style.display = "none";
   chapterList.style.display = "block";
+
+  chapterList.innerHTML = `
+    <h2>📖 ${novelName}</h2>
+    <button onclick="goBackToNovels()">⬅️ Back to Novels</button>
+    <hr />
+  `;
 
   const items = doc.querySelectorAll("ul.list-chapter li a");
   if (!items.length) {
@@ -53,12 +58,12 @@ async function loadChapters(novelUrl, novelName) {
     return;
   }
 
-  items.forEach((a, i) => {
+  items.forEach((a) => {
     const name = a.textContent.trim();
     const link = baseUrl + a.getAttribute("href");
 
     const div = document.createElement("div");
-    div.textContent = `${name}`;
+    div.textContent = name;
     div.className = "chapter-item";
     div.style.cursor = "pointer";
     div.onclick = () => loadChapterContent(link, name, novelName);
@@ -90,6 +95,10 @@ async function loadChapterContent(chapterUrl, chapterName, novelName) {
 function goBack() {
   document.getElementById("chapter-content").style.display = "none";
   document.getElementById("chapter-list").style.display = "block";
+}
+function goBackToNovels() {
+  document.getElementById("chapter-list").style.display = "none";
+  document.getElementById("novel-list").style.display = "block";
 }
 
 // Load popular novels on page load
