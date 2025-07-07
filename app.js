@@ -37,7 +37,9 @@ async function loadPopularNovels() {
 }
 
 async function loadChapters(novelUrl, novelName) {
-  const doc = await fetchHTML(novelUrl);
+  const ajaxUrl = novelUrl.replace(/\/$/, "") + "/ajax/chapters/";
+  const doc = await fetchHTML(ajaxUrl);
+
   const chapterList = document.getElementById("chapter-list");
   const novelList = document.getElementById("novel-list");
   const chapterContent = document.getElementById("chapter-content");
@@ -61,9 +63,7 @@ async function loadChapters(novelUrl, novelName) {
   chapterList.appendChild(backBtn);
   chapterList.appendChild(document.createElement("hr"));
 
-  const tab = doc.querySelector("#tab-chapters-title");
-  const items = tab?.querySelectorAll("li > a") || [];
-
+  const items = doc.querySelectorAll("li > a[href*='/chapter-']");
   if (!items.length) {
     const msg = document.createElement("p");
     msg.textContent = "⚠️ No chapters found.";
